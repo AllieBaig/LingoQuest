@@ -23,6 +23,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   const lang = params.get('lang') || 'fr';
 
   applyMinimalUI(uiMode);
+  
+  // Detect PWA standalone mode
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+  || window.navigator.standalone === true;
+
+if (isStandalone) {
+  console.log('[PWA] Running in standalone mode');
+  document.body.classList.add('standalone-mode');
+}
+
 
   // Load profile
   const profile = await getOrCreateProfile();
