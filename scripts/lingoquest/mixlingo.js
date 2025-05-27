@@ -1,24 +1,17 @@
 /**
- * MixLingo Game Mode (Normal UI)
- * Loads a random language file and presents multilingual MCQ challenge
+ * MixLingo Mode (Normal UI - FR only)
+ * Shows English sentences with blanks and French MCQ answers
+ * Depends on: lang/mixlingo-fr.json, utils/mcqAutoCheck.js, xpTracker.js
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-28 02:15 | File: scripts/lingoquest/mixlingo.js
+ * Timestamp: 2025-05-28 00:20 | File: scripts/lingoquest/mixlingo.js
  */
 
 import { renderMCQAutoCheck } from '../utils/mcqAutoCheck.js';
 import { loadQuestionPool, getNextQuestion, markAnswered } from '../utils/questionPool.js';
 import { awardXP } from '../utils/xpTracker.js';
 
-const langFiles = [
-  'lang/mixlingo-fr.json',
-  'lang/mixlingo-es.json',
-  'lang/mixlingo-de.json',
-  'lang/mixlingo-it.json'
-];
-
 export async function initMixLingoMode() {
-  const file = langFiles[Math.floor(Math.random() * langFiles.length)];
-  const data = await fetch(file).then(res => res.json());
+  const data = await fetch('lang/mixlingo-fr.json').then(res => res.json());
 
   loadQuestionPool(data, true);
   nextQuestion();
@@ -47,3 +40,4 @@ function showCompletion() {
   result.textContent = 'MixLingo complete! Well done!';
   result.hidden = false;
 }
+
