@@ -1,7 +1,7 @@
 <!--
 LingoQuest: Gamified Vocabulary Adventure
 MIT License — https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
-Generated: 2025-05-27 | File: index.html
+Generated: 2025-05-27 19:25 | File: index.html
 -->
 
 <!DOCTYPE html>
@@ -33,22 +33,39 @@ Generated: 2025-05-27 | File: index.html
   </header>
 
   <main id="mainScreen">
+
+    <!-- Game Mode Selector -->
+    <section id="modeSelector">
+      <h2>Choose a Mode</h2>
+      <div class="mode-buttons">
+        <button id="startSolo">Start Solo Mode</button>
+        <button id="startMixLingo">Start MixLingo</button>
+      </div>
+    </section>
+
+    <!-- Game Panel -->
     <section id="questPanel">
       <div id="categorySelector" hidden></div>
+
       <div id="sentenceClueContainer">
         <p id="sentenceClue"></p>
       </div>
+
       <div id="sentenceBuilderArea" class="builder-area"></div>
       <button id="submitSentence">Submit</button>
     </section>
 
     <section id="hintPanel" hidden></section>
     <section id="resultSummary" hidden></section>
+
+    <!-- ASCII fallback area -->
+    <pre id="asciiOutput" hidden></pre>
   </main>
 
   <footer id="footer">
     <div id="xpTracker"></div>
     <div id="streakBadge"></div>
+    <div id="versionLabel"></div>
   </footer>
 
   <script type="module" src="scripts/main.js"></script>
