@@ -1,0 +1,26 @@
+
+{
+  "mode": "solo",
+  "language": "fr",
+  "difficulty": "easy",
+  "clues": [
+    {
+      "id": "fr001",
+      "clue": "Traduisez : « Je veux manger une pomme. »",
+      "words": ["Je", "veux", "manger", "une", "pomme"],
+      "correctOrder": [0, 1, 2, 3, 4]
+    },
+    {
+      "id": "fr002",
+      "clue": "Traduisez : « Elle aime le chocolat. »",
+      "words": ["Elle", "aime", "le", "chocolat"],
+      "correctOrder": [0, 1, 2, 3]
+    },
+    {
+      "id": "fr003",
+      "clue": "Traduisez : « Nous allons à l’école. »",
+      "words": ["Nous", "allons", "à", "l’école"],
+      "correctOrder": [0, 1, 2, 3]
+    }
+  ]
+}
