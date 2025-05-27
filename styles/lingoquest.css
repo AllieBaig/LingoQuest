@@ -1,19 +1,32 @@
-
+/* MCQ container uses grid to align groups of buttons */
 .mcq-wrapper {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
 }
 
+/* Each MCQ option is a flexbox button */
 .mcq-option {
-  padding: 0.5rem 1rem;
-  border: 2px solid #ccc;
-  background: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-md);
+  background-color: var(--primary-bg);
+  border: 2px solid var(--primary-border);
+  border-radius: var(--button-radius);
   cursor: pointer;
-  border-radius: 8px;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.mcq-option:hover {
+  background-color: #f0f0f0;
 }
 
 .mcq-option.selected {
-  background-color: #d0f0d0;
-  border-color: #4caf50;
+  background-color: var(--correct-bg);
+  border-color: var(--correct-border);
 }
+
