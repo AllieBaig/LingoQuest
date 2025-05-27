@@ -1,0 +1,64 @@
+
+<!--
+LingoQuest: Error Log Viewer
+MIT License — https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
+Generated: 2025-05-27 19:45 | File: tools/errorlog.html
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Error Log Viewer</title>
+  <link rel="stylesheet" href="../styles/main.css" />
+  <style>
+    body {
+      padding: 2rem;
+    }
+    pre {
+      background: #f9f9f9;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    button {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>LingoQuest Error Log</h1>
+
+  <pre id="errorLogOutput">Loading errors...</pre>
+  <button id="clearErrorLog">Clear Log</button>
+
+  <script type="module">
+    import { getErrorLog, clearErrorLog } from './errorLog.js';
+
+    const output = document.getElementById('errorLogOutput');
+
+    function renderErrors() {
+      const errors = getErrorLog();
+      if (!errors.length) {
+        output.textContent = 'No errors logged.';
+        return;
+      }
+
+      output.textContent = errors.map(err =>
+        `[${err.timestamp}] ${err.source}: ${err.message}`
+      ).join('\\n');
+    }
+
+    document.getElementById('clearErrorLog').addEventListener('click', () => {
+      clearErrorLog();
+      renderErrors();
+    });
+
+    renderErrors();
+  </script>
+
+</body>
+</html>
