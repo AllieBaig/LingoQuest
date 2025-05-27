@@ -1,0 +1,11 @@
+
+:root {
+  --primary-bg: #f9f9f9;
+  --primary-border: #ccc;
+  --correct-bg: #d0f0d0;
+  --correct-border: #4caf50;
+  --button-radius: 8px;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --font-size-md: 1rem;
+}
