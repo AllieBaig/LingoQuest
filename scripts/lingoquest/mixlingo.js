@@ -1,70 +1,49 @@
 /**
- * MixLingo – Normal UI with MCQ (English Sentence + Foreign Word Options)
- * Replaces one English word in a sentence with MCQ foreign word choices
- * Matches ASCII logic but styled for Minimal UI with button interactions
+ * MixLingo Game Mode (Normal UI)
+ * Loads a random language file and presents multilingual MCQ challenge
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-27 23:59 | File: scripts/lingoquest/mixlingo.js
+ * Timestamp: 2025-05-28 02:15 | File: scripts/lingoquest/mixlingo.js
  */
 
-import { generateMCQ } from '../utils/mcqEngine.js';
+import { renderMCQAutoCheck } from '../utils/mcqAutoCheck.js';
+import { loadQuestionPool, getNextQuestion, markAnswered } from '../utils/questionPool.js';
+import { awardXP } from '../utils/xpTracker.js';
 
-export function initMixLingoMode(level = 'easy', lang = 'fr') {
-  const clueEl = document.getElementById('sentenceClue');
-  const builderArea = document.getElementById('sentenceBuilderArea');
-  const resultEl = document.getElementById('resultSummary');
-  const submitBtn = document.getElementById('submitSentence');
+const langFiles = [
+  'lang/mixlingo-fr.json',
+  'lang/mixlingo-es.json',
+  'lang/mixlingo-de.json',
+  'lang/mixlingo-it.json'
+];
 
-  // Example sentence structure
-  const sentenceData = {
-    clue: "Complete the sentence with the correct foreign word:",
-    sentence: ["I", "want", "to", "___", "an", "apple."],
-    correct: "manger", // "to eat" in French
-    level,
-    lang,
-    fact: "‘Manger’ is French for ‘to eat’."
-  };
+export async function initMixLingoMode() {
+  const file = langFiles[Math.floor(Math.random() * langFiles.length)];
+  const data = await fetch(file).then(res => res.json());
 
-  // Render sentence with blank
-  clueEl.textContent = sentenceData.clue;
-  builderArea.innerHTML = '';
+  loadQuestionPool(data, true);
+  nextQuestion();
+}
 
-  const sentenceEl = document.createElement('p');
-  sentenceEl.innerHTML = sentenceData.sentence
-    .map(w => (w === "___" ? "<strong>[ ? ]</strong>" : w))
-    .join(' ');
-  builderArea.appendChild(sentenceEl);
+function nextQuestion() {
+  const q = getNextQuestion();
+  if (!q) return showCompletion();
 
-  const options = generateMCQ(sentenceData.correct, level, lang);
-  const optionGroup = document.createElement('div');
-  optionGroup.className = 'mcq-wrapper';
+  document.getElementById('sentenceClue').textContent = q.sentence;
 
-  options.forEach(word => {
-    const btn = document.createElement('button');
-    btn.className = 'mcq-option';
-    btn.textContent = word;
-    btn.addEventListener('click', () => {
-      optionGroup.querySelectorAll('.mcq-option').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-    });
-    optionGroup.appendChild(btn);
-  });
-
-  builderArea.appendChild(optionGroup);
-  resultEl.hidden = true;
-
-  submitBtn.onclick = () => {
-    const selected = builderArea.querySelector('.mcq-option.selected')?.textContent;
-    resultEl.hidden = false;
-
-    if (!selected) {
-      resultEl.textContent = "Please select a foreign word.";
-      return;
+  renderMCQAutoCheck(
+    'sentenceBuilderArea',
+    q.answer,
+    q.options,
+    (correct) => {
+      markAnswered(q);
+      if (correct) awardXP(15);
+      nextQuestion();
     }
+  );
+}
 
-    if (selected === sentenceData.correct) {
-      resultEl.textContent = `Correct! ${sentenceData.fact} +10 XP`;
-    } else {
-      resultEl.textContent = `Incorrect. ${sentenceData.fact}`;
-    }
-  };
+function showCompletion() {
+  const result = document.getElementById('resultSummary');
+  result.textContent = 'MixLingo complete! Well done!';
+  result.hidden = false;
 }
