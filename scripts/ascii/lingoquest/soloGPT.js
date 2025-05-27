@@ -1,75 +1,96 @@
-
 /**
- * Solo Mode Script for LingoQuest
- * Presents a sentence-building challenge using MCQ per word
- * Called by main.js or gameNavigation.js to launch Solo Mode
- * Uses: utils/mcqEngine.js for generating difficulty-based options
- * Fallback-aware, UI-linked, designed for async clue injection
+ * Solo Mode – ASCII UI
+ * Lets user select correct sentence order from shuffled words
+ * Called by main.js when ?mode=solo&ui=ascii
+ * Uses: asciiRenderer.js for layout and display
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-27 17:00 | File: scripts/ascii/lingoquest/solo.js
+ * Timestamp: 2025-05-27 20:40 | File: scripts/ascii/lingoquest/solo.js
  */
 
-import { generateMCQ } from '../../utils/mcqEngine.js';
+import {
+  renderHeader, renderClueBlock, renderWordTiles,
+  renderResult, renderFooterHUD, printAscii
+} from '../../utils/asciiRenderer.js';
 
 export function initSoloMode(difficulty = 'easy') {
-  const clueElement = document.getElementById('sentenceClue');
-  const builderArea = document.getElementById('sentenceBuilderArea');
-  const submitButton = document.getElementById('submitSentence');
-
   const sentenceData = {
-    clue: "Translate: 'I want to eat an apple.'",
+    clue: "Rebuild this sentence in correct order:",
     words: ["Je", "veux", "manger", "une", "pomme"],
     correctOrder: [0, 1, 2, 3, 4]
   };
 
-  clueElement.textContent = sentenceData.clue;
+  const asciiOut = document.getElementById('asciiOutput');
+  asciiOut.hidden = false;
 
-  // Commented out: renderWordTiles(sentenceData.words, builderArea); // Old drag mode
-  renderMCQBuilder(sentenceData, builderArea, difficulty);
+  let selectedIndices = [];
 
-  submitButton.addEventListener('click', () => {
-    const selectedWords = Array.from(
-      builderArea.querySelectorAll('.mcq-option.selected')
-    ).map(el => el.textContent);
+  render();
 
-    validateSentence(selectedWords, sentenceData);
+  asciiOut.addEventListener('click', (e) => {
+    const index = e.target.dataset.index;
+    if (index !== undefined) {
+      toggleSelect(parseInt(index));
+      render();
+    }
   });
-}
 
-function renderMCQBuilder(sentenceData, container, level) {
-  container.innerHTML = '';
-
-  sentenceData.correctOrder.forEach(index => {
-    const correctWord = sentenceData.words[index];
-    const mcqOptions = generateMCQ(correctWord, level);
-
-    const wrapper = document.createElement('div');
-    wrapper.className = 'mcq-wrapper';
-
-    mcqOptions.forEach(option => {
-      const btn = document.createElement('button');
-      btn.textContent = option;
-      btn.className = 'mcq-option';
-      btn.addEventListener('click', () => {
-        wrapper.querySelectorAll('.mcq-option').forEach(opt =>
-          opt.classList.remove('selected')
-        );
-        btn.classList.add('selected');
-      });
-      wrapper.appendChild(btn);
-    });
-
-    container.appendChild(wrapper);
+  document.addEventListener('keydown', (e) => {
+    if (e.key >= '1' && e.key <= String(sentenceData.words.length)) {
+      const idx = parseInt(e.key) - 1;
+      toggleSelect(idx);
+      render();
+    }
+    if (e.key === 'Enter') {
+      checkAnswer();
+    }
   });
-}
 
-function validateSentence(selected, sentenceData) {
-  const correctWords = sentenceData.correctOrder.map(i => sentenceData.words[i]);
-  const isCorrect = selected.join(' ') === correctWords.join(' ');
+  function toggleSelect(index) {
+    if (selectedIndices.includes(index)) {
+      selectedIndices = selectedIndices.filter(i => i !== index);
+    } else {
+      selectedIndices.push(index);
+    }
+  }
 
-  const result = document.getElementById('resultSummary');
-  result.hidden = false;
-  result.textContent = isCorrect
-    ? 'Correct! +10 XP'
-    : 'Oops! Try again.';
+  function checkAnswer() {
+    const correctWords = sentenceData.correctOrder.map(i => sentenceData.words[i]);
+    const selectedWords = selectedIndices.map(i => sentenceData.words[i]);
+    const isCorrect = selectedWords.join(' ') === correctWords.join(' ');
+
+    printAscii(
+      renderHeader(),
+      renderClueBlock("Solo Mode (ASCII)", [sentenceData.clue]),
+      renderWordTiles(sentenceData.words, selectedIndices),
+      renderResult(isCorrect ? "Correct! +10 XP" : "Incorrect. Try again."),
+      renderFooterHUD(50, "2 Days", "1.0.0")
+    );
+  }
+
+  function render() {
+    printAscii(
+      renderHeader(),
+      renderClueBlock("Solo Mode (ASCII)", [sentenceData.clue]),
+      renderWordTiles(sentenceData.words, selectedIndices),
+      renderFooterHUD(50, "2 Days", "1.0.0")
+    );
+
+    makeWordsTouchable(sentenceData.words);
+  }
+
+  function makeWordsTouchable(words) {
+    const lines = asciiOut.textContent.split('\n');
+    const tileLineIndex = lines.findIndex(l => l.includes('[') && l.includes(']') && l.includes(words[0]));
+
+    if (tileLineIndex === -1) return;
+
+    asciiOut.innerHTML = lines.map((line, i) => {
+      if (i !== tileLineIndex) return line;
+      return words.map((word, idx) => {
+        const isSelected = selectedIndices.includes(idx);
+        const mark = isSelected ? `*` : '';
+        return `<span data-index="${idx}">[ ${word}${mark} ]</span>`;
+      }).join(' ');
+    }).join('<br>');
+  }
 }
