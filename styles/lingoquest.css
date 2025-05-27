@@ -1,0 +1,19 @@
+
+.mcq-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.mcq-option {
+  padding: 0.5rem 1rem;
+  border: 2px solid #ccc;
+  background: #f9f9f9;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.mcq-option.selected {
+  background-color: #d0f0d0;
+  border-color: #4caf50;
+}
