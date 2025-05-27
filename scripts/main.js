@@ -1,15 +1,18 @@
 /**
  * Main Entry Script for LingoQuest
- * Handles mode + UI loading via buttons and URL params
- * Applies Minimal UI and persistent Dark Mode support
- * Uses: utils/version.js, tools/buildInfo.js, utils/uiModeManager.js, ascii/lingoquest, lingoquest/
+ * Handles mode + UI loading, buttons, and preferences
+ * Supports Solo, MixLingo, WordRelic, Safari — ASCII & Normal UI
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-27 23:50 | File: scripts/main.js
+ * Timestamp: 2025-05-28 00:45 | File: scripts/main.js
  */
 
 import { showVersion, checkVersionChanges } from './utils/version.js';
 import { logBuildInfo } from '../tools/buildInfo.js';
-import { applyMinimalUI, toggleDarkMode } from './utils/uiModeManager.js';
+import {
+  applyMinimalUI,
+  toggleDarkMode,
+  toggleMinimalOnly
+} from './utils/uiModeManager.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   showVersion('versionLabel');
@@ -23,33 +26,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
   console.log(`[LingoQuest] Mode: ${mode || 'none'} | UI: ${uiMode} | Lang: ${lang}`);
 
-  // Apply Minimal UI and Dark Mode based on localStorage
+  // Apply UI style
   applyMinimalUI(uiMode);
 
-  // Dark Mode toggle button
-  document.getElementById('darkModeToggle')?.addEventListener('click', () => {
-    toggleDarkMode();
-  });
-
-  // UI Mode dropdown selector
+  // UI selector
   const uiSelector = document.getElementById('uiModeSelector');
   if (uiSelector) {
     uiSelector.value = uiMode;
     uiSelector.addEventListener('change', () => {
       const newUI = uiSelector.value;
-      const newUrl = new URL(window.location.href);
-      newUrl.searchParams.set('ui', newUI);
-      window.location.href = newUrl.toString();
+      const url = new URL(window.location.href);
+      url.searchParams.set('ui', newUI);
+      window.location.href = url.toString();
     });
   }
 
-  // Mode launch buttons
+  // Dark mode toggle
+  document.getElementById('darkModeToggle')?.addEventListener('click', () => {
+    toggleDarkMode();
+  });
+
+  // Minimal-only toggle
+  document.getElementById('minimalOnlyToggle')?.addEventListener('click', () => {
+    toggleMinimalOnly();
+  });
+
+  // Mode buttons
   document.getElementById('startSolo')?.addEventListener('click', () => {
     launchMode('solo', uiMode, lang);
   });
 
   document.getElementById('startMixLingo')?.addEventListener('click', () => {
     launchMode('mixlingo', uiMode, lang);
+  });
+
+  document.getElementById('startwordRelic')?.addEventListener('click', () => {
+    launchMode('wordrelic', uiMode, lang);
+  });
+
+  document.getElementById('startwordSafari')?.addEventListener('click', () => {
+    launchMode('safari', uiMode, lang);
   });
 
   // Auto-launch from URL
@@ -69,6 +85,12 @@ async function launchMode(mode, ui, lang) {
     } else if (mode === 'mixlingo') {
       const { initMixLingoAscii } = await import('./ascii/lingoquest/mixlingo.js');
       initMixLingoAscii();
+    } else if (mode === 'safari') {
+      const { initWordSafariAscii } = await import('./ascii/lingoquest/wordSafari.js');
+      initWordSafariAscii();
+    } else if (mode === 'wordrelic') {
+      const { initWordRelicAscii } = await import('./ascii/lingoquest/wordRelic.js');
+      initWordRelicAscii();
     }
   } else {
     if (mode === 'solo') {
@@ -77,6 +99,12 @@ async function launchMode(mode, ui, lang) {
     } else if (mode === 'mixlingo') {
       const { initMixLingoMode } = await import('./lingoquest/mixlingo.js');
       initMixLingoMode();
+    } else if (mode === 'safari') {
+      const { initWordSafariMode } = await import('./lingoquest/wordSafari.js');
+      initWordSafariMode();
+    } else if (mode === 'wordrelic') {
+      const { initWordRelicMode } = await import('./lingoquest/wordRelic.js');
+      initWordRelicMode();
     }
   }
 }
