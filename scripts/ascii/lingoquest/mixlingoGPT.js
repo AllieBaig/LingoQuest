@@ -1,67 +1,75 @@
-
-/**
- * MixLingo – ASCII UI
- * Renders mixed-language sentence with MCQ using asciiRenderer module
- * Called by main.js when ?mode=mixlingo&ui=ascii
- * Uses: utils/asciiRenderer.js
- * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-27 20:00 | File: scripts/ascii/lingoquest/mixlingo.js
- */
-
+// inside scripts/ascii/lingoquest/mixlingo.js
 import {
-  renderHeader,
-  renderClueBlock,
-  renderMCQOptions,
-  renderResult,
-  renderFooterHUD,
-  printAscii
+  renderHeader, renderClueBlock, renderMCQOptions,
+  renderResult, renderFooterHUD, printAscii
 } from '../../utils/asciiRenderer.js';
 
 export function initMixLingoAscii() {
   const clue = "Complete the sentence with the correct foreign word:";
-  const sentence = '"I want to ___ an apple."';
+  const sentence = `"I want to ___ an apple."`;
   const options = ["manger", "dormir", "parler"];
-  const correctAnswer = "manger";
-  let selected = null;
+  const correct = "manger";
+  let selectedIndex = null;
 
-  // Unhide ASCII panel
-  const out = document.getElementById('asciiOutput');
-  out.hidden = false;
+  const asciiOut = document.getElementById('asciiOutput');
+  asciiOut.hidden = false;
 
-  // Initial Render
   render();
 
-  // Global listener for key selection (1, 2, 3)
-  document.addEventListener('keydown', onKey);
+  // Touch-friendly selection
+  asciiOut.addEventListener('click', (e) => {
+    if (!e.target.dataset.index) return;
+    selectedIndex = parseInt(e.target.dataset.index);
+    render();
+  });
 
-  function onKey(e) {
+  document.addEventListener('keydown', (e) => {
     if (e.key >= '1' && e.key <= String(options.length)) {
-      selected = options[parseInt(e.key) - 1];
+      selectedIndex = parseInt(e.key) - 1;
       render();
-    } else if (e.key === 'Enter' && selected) {
-      const resultMsg = selected === correctAnswer
-        ? `Correct! “${correctAnswer}” means “to eat” in French.`
-        : `Incorrect. Hint: “${correctAnswer}” means “to eat.”`;
-
-      printAscii(
-        renderHeader("LingoQuest"),
-        renderClueBlock("MixLingo (ASCII)", [clue, sentence]),
-        renderMCQOptions(options, options.indexOf(selected)),
-        renderResult(resultMsg),
-        renderFooterHUD(40, "4 Days", "1.0.1")
-      );
-
-      document.removeEventListener('keydown', onKey); // prevent re-submit
+    } else if (e.key === 'Enter' && selectedIndex !== null) {
+      checkAnswer();
     }
+  });
+
+  function checkAnswer() {
+    const selectedWord = options[selectedIndex];
+    const isCorrect = selectedWord === correct;
+    const msg = isCorrect
+      ? `Correct! "${correct}" means "to eat" in French.`
+      : `Incorrect. The correct word was "${correct}".`;
+
+    printAscii(
+      renderHeader(),
+      renderClueBlock("MixLingo (ASCII)", [clue, sentence]),
+      renderMCQOptions(options, selectedIndex),
+      renderResult(msg),
+      renderFooterHUD(40, "4 Days", "1.0.1")
+    );
   }
 
   function render() {
     printAscii(
-      renderHeader("LingoQuest"),
+      renderHeader(),
       renderClueBlock("MixLingo (ASCII)", [clue, sentence]),
-      renderMCQOptions(options, selected ? options.indexOf(selected) : null),
+      renderMCQOptions(options, selectedIndex),
       renderFooterHUD(40, "4 Days", "1.0.1")
     );
+
+    // Make [1] etc. tappable
+    makeTappable(options);
+  }
+
+  function makeTappable(opts) {
+    const lines = asciiOut.textContent.split('\n');
+    const mcqLineIndex = lines.findIndex(l => l.includes('[1]'));
+    if (mcqLineIndex === -1) return;
+
+    asciiOut.innerHTML = lines.map((line, i) => {
+      if (i !== mcqLineIndex) return line;
+      return opts.map((opt, idx) =>
+        `<span data-index="${idx}">[${idx + 1}] ${opt}</span>`
+      ).join('   ');
+    }).join('<br>');
   }
 }
-
