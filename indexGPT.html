@@ -1,4 +1,3 @@
-
 <!--
 LingoQuest: Gamified Vocabulary Adventure
 MIT License — https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
@@ -21,7 +20,16 @@ Generated: 2025-05-27 | File: index.html
 <body>
   <header id="header">
     <h1 id="gameTitle">LingoQuest</h1>
+
+    <!-- Language toggle -->
     <button id="languageToggle" aria-label="Change Language">🌐</button>
+
+    <!-- UI mode selector -->
+    <label for="uiModeSelector" class="sr-only">Select UI Mode</label>
+    <select id="uiModeSelector" name="uiModeSelector" aria-label="UI Mode">
+      <option value="normal" selected>Normal UI</option>
+      <option value="ascii">ASCII UI</option>
+    </select>
   </header>
 
   <main id="mainScreen">
@@ -46,4 +54,3 @@ Generated: 2025-05-27 | File: index.html
   <script type="module" src="scripts/main.js"></script>
 </body>
 </html>
-
