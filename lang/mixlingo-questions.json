@@ -1,0 +1,178 @@
+
+[
+  {
+    "sentence": "I want to ___ an apple.",
+    "answer": "manger",
+    "options": ["manger", "dormir"],
+    "lang": "fr",
+    "level": "easy"
+  },
+  {
+    "sentence": "She is reading a ___ in the library.",
+    "answer": "libro",
+    "options": ["libro", "maison", "pomme"],
+    "lang": "es",
+    "level": "medium"
+  },
+  {
+    "sentence": "They go to ___ every Sunday.",
+    "answer": "Kirche",
+    "options": ["Kirche", "école", "fête", "gato"],
+    "lang": "de",
+    "level": "hard"
+  },
+  {
+    "sentence": "We drink ___ in the morning.",
+    "answer": "café",
+    "options": ["café", "thé", "agua"],
+    "lang": "fr",
+    "level": "easy"
+  },
+  {
+    "sentence": "Do you like ___ pizza?",
+    "answer": "la",
+    "options": ["la", "el", "le"],
+    "lang": "es",
+    "level": "easy"
+  },
+  {
+    "sentence": "He plays the ___ every night.",
+    "answer": "violon",
+    "options": ["violon", "piano", "livre"],
+    "lang": "fr",
+    "level": "medium"
+  },
+  {
+    "sentence": "My ___ is blue.",
+    "answer": "camisa",
+    "options": ["camisa", "chaussure", "blume"],
+    "lang": "es",
+    "level": "medium"
+  },
+  {
+    "sentence": "Open the ___, please.",
+    "answer": "porte",
+    "options": ["porte", "book", "ventana"],
+    "lang": "fr",
+    "level": "easy"
+  },
+  {
+    "sentence": "The ___ barks at night.",
+    "answer": "perro",
+    "options": ["perro", "chat", "Hund"],
+    "lang": "es",
+    "level": "medium"
+  },
+  {
+    "sentence": "He is eating a ___ for lunch.",
+    "answer": "panino",
+    "options": ["panino", "pomme", "queso"],
+    "lang": "it",
+    "level": "medium"
+  },
+  {
+    "sentence": "I love ___ music.",
+    "answer": "la",
+    "options": ["la", "le", "el"],
+    "lang": "es",
+    "level": "easy"
+  },
+  {
+    "sentence": "The ___ is flying high.",
+    "answer": "Vogel",
+    "options": ["Vogel", "oiseau", "pájaro", "gatto"],
+    "lang": "de",
+    "level": "hard"
+  },
+  {
+    "sentence": "This ___ is sweet.",
+    "answer": "manzana",
+    "options": ["manzana", "banane", "apfel"],
+    "lang": "es",
+    "level": "medium"
+  },
+  {
+    "sentence": "My ___ hurts.",
+    "answer": "ventre",
+    "options": ["ventre", "main", "tête"],
+    "lang": "fr",
+    "level": "medium"
+  },
+  {
+    "sentence": "She wears a ___ every day.",
+    "answer": "robe",
+    "options": ["robe", "zapato", "shirt"],
+    "lang": "fr",
+    "level": "easy"
+  },
+  {
+    "sentence": "The ___ is closed.",
+    "answer": "ventana",
+    "options": ["ventana", "porte", "Tür"],
+    "lang": "es",
+    "level": "medium"
+  },
+  {
+    "sentence": "They live in a big ___.",
+    "answer": "Haus",
+    "options": ["Haus", "maison", "casa"],
+    "lang": "de",
+    "level": "hard"
+  },
+  {
+    "sentence": "I want to ___ you.",
+    "answer": "amour",
+    "options": ["amour", "lieben", "amar"],
+    "lang": "fr",
+    "level": "hard"
+  },
+  {
+    "sentence": "Let’s go to the ___.",
+    "answer": "mercado",
+    "options": ["mercado", "école", "restaurant"],
+    "lang": "es",
+    "level": "easy"
+  },
+  {
+    "sentence": "She speaks good ___.",
+    "answer": "Deutsch",
+    "options": ["Deutsch", "français", "español", "italiano"],
+    "lang": "de",
+    "level": "hard"
+  },
+  {
+    "sentence": "I want a cold ___.",
+    "answer": "eis",
+    "options": ["eis", "glace", "helado"],
+    "lang": "de",
+    "level": "medium"
+  },
+  {
+    "sentence": "This is my ___.",
+    "answer": "livre",
+    "options": ["livre", "book", "libro"],
+    "lang": "fr",
+    "level": "easy"
+  },
+  {
+    "sentence": "___ cat is black.",
+    "answer": "El",
+    "options": ["El", "La", "Le"],
+    "lang": "es",
+    "level": "easy"
+  },
+  {
+    "sentence": "She sings a beautiful ___.",
+    "answer": "Lied",
+    "options": ["Lied", "chanson", "canción", "canzone"],
+    "lang": "de",
+    "level": "hard"
+  },
+  {
+    "sentence": "He plays the ___ well.",
+    "answer": "piano",
+    "options": ["piano", "violon", "guitarra"],
+    "lang": "it",
+    "level": "easy"
+  }
+]
