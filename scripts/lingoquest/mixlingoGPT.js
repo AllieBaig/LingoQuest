@@ -1,62 +1,70 @@
 /**
- * MixLingo Mode – Normal UI
- * Builds a mixed-language sentence with foreign word immersion
- * Called by main.js when MixLingo + Normal UI is selected
- * Uses DOM from index.html; supports manual tile selection
+ * MixLingo – Normal UI with MCQ (English Sentence + Foreign Word Options)
+ * Replaces one English word in a sentence with MCQ foreign word choices
+ * Matches ASCII logic but styled for Minimal UI with button interactions
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-27 19:50 | File: scripts/lingoquest/mixlingo.js
+ * Timestamp: 2025-05-27 23:59 | File: scripts/lingoquest/mixlingo.js
  */
 
-export function initMixLingoMode() {
-  const clueElement = document.getElementById('sentenceClue');
-  const builderArea = document.getElementById('sentenceBuilderArea');
-  const submitButton = document.getElementById('submitSentence');
+import { generateMCQ } from '../utils/mcqEngine.js';
 
+export function initMixLingoMode(level = 'easy', lang = 'fr') {
+  const clueEl = document.getElementById('sentenceClue');
+  const builderArea = document.getElementById('sentenceBuilderArea');
+  const resultEl = document.getElementById('resultSummary');
+  const submitBtn = document.getElementById('submitSentence');
+
+  // Example sentence structure
   const sentenceData = {
-    clue: "Build this sentence using a mix of English and French:",
-    words: ["I", "want", "to", "manger", "an", "apple"],
-    correctOrder: [0, 1, 2, 3, 4, 5],
-    foreignWord: "manger", // French for "to eat"
-    language: "fr"
+    clue: "Complete the sentence with the correct foreign word:",
+    sentence: ["I", "want", "to", "___", "an", "apple."],
+    correct: "manger", // "to eat" in French
+    level,
+    lang,
+    fact: "‘Manger’ is French for ‘to eat’."
   };
 
-  clueElement.textContent = sentenceData.clue;
+  // Render sentence with blank
+  clueEl.textContent = sentenceData.clue;
+  builderArea.innerHTML = '';
 
-  renderWordTiles(sentenceData.words, builderArea);
+  const sentenceEl = document.createElement('p');
+  sentenceEl.innerHTML = sentenceData.sentence
+    .map(w => (w === "___" ? "<strong>[ ? ]</strong>" : w))
+    .join(' ');
+  builderArea.appendChild(sentenceEl);
 
-  submitButton.addEventListener('click', () => {
-    const selectedWords = Array.from(
-      builderArea.querySelectorAll('.word-tile.selected')
-    ).map(el => el.textContent);
+  const options = generateMCQ(sentenceData.correct, level, lang);
+  const optionGroup = document.createElement('div');
+  optionGroup.className = 'mcq-wrapper';
 
-    validateSentence(selectedWords, sentenceData);
-  });
-}
-
-function renderWordTiles(words, container) {
-  container.innerHTML = '';
-  words.forEach((word, index) => {
-    const tile = document.createElement('div');
-    tile.textContent = word;
-    tile.className = 'word-tile';
-    tile.dataset.index = index;
-    tile.addEventListener('click', () => {
-      tile.classList.toggle('selected');
+  options.forEach(word => {
+    const btn = document.createElement('button');
+    btn.className = 'mcq-option';
+    btn.textContent = word;
+    btn.addEventListener('click', () => {
+      optionGroup.querySelectorAll('.mcq-option').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
     });
-    container.appendChild(tile);
+    optionGroup.appendChild(btn);
   });
-}
 
-function validateSentence(selected, sentenceData) {
-  const correct = sentenceData.correctOrder.map(i => sentenceData.words[i]);
-  const isCorrect = selected.join(' ') === correct.join(' ');
+  builderArea.appendChild(optionGroup);
+  resultEl.hidden = true;
 
-  const result = document.getElementById('resultSummary');
-  result.hidden = false;
+  submitBtn.onclick = () => {
+    const selected = builderArea.querySelector('.mcq-option.selected')?.textContent;
+    resultEl.hidden = false;
 
-  if (isCorrect) {
-    result.textContent = `Perfect! "${sentenceData.foreignWord}" means "to eat" in ${sentenceData.language}. +10 XP`;
-  } else {
-    result.textContent = `Incorrect. Try again. Hint: "${sentenceData.foreignWord}" is the key.`;
-  }
+    if (!selected) {
+      resultEl.textContent = "Please select a foreign word.";
+      return;
+    }
+
+    if (selected === sentenceData.correct) {
+      resultEl.textContent = `Correct! ${sentenceData.fact} +10 XP`;
+    } else {
+      resultEl.textContent = `Incorrect. ${sentenceData.fact}`;
+    }
+  };
 }
