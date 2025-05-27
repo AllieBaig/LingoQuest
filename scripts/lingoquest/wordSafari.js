@@ -1,6 +1,6 @@
 
 /**
- * Word Safari – Normal UI
+ * Word Safari – Normal UI/
  * Players explore themed categories and answer MCQs to progress
  * Uses shuffled word sets, tracks score, and unlocks safari badges
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
