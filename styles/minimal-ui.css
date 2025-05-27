@@ -1,0 +1,193 @@
+
+/*
+ * Minimal UI Styling for LingoQuest
+ * Activated when body has `.minimal-ui`
+ * Includes dark mode via `.minimal-ui.dark`
+ * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
+ * Timestamp: 2025-05-27 23:05 | File: styles/minimal-ui.css
+*/
+
+body.minimal-ui {
+  background-color: #FAFAFA;
+  font-family: 'Inter', sans-serif;
+  color: #111827;
+  transition: background 0.3s ease;
+}
+
+body.minimal-ui header,
+body.minimal-ui footer {
+  background-color: #ffffff;
+  border-bottom: 1px solid #E5E7EB;
+  padding: 1rem;
+}
+
+body.minimal-ui #mainScreen {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+}
+
+body.minimal-ui .mode-buttons button,
+body.minimal-ui #submitSentence {
+  background: #3B82F6;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+body.minimal-ui .mode-buttons button:hover,
+body.minimal-ui #submitSentence:hover {
+  transform: scale(0.98);
+}
+
+body.minimal-ui #sentenceClueContainer,
+body.minimal-ui .builder-area {
+  background: white;
+  border: 1px solid #E5E7EB;
+  padding: 1rem;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+body.minimal-ui .builder-area p {
+  font-size: 1.25rem;
+  line-height: 1.5;
+  font-weight: 500;
+  text-align: center;
+}
+
+body.minimal-ui .builder-area strong {
+  color: #3B82F6;
+}
+
+body.minimal-ui .mcq-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  align-items: center;
+}
+
+body.minimal-ui .mcq-option {
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 999px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
+}
+
+body.minimal-ui .mcq-option:hover {
+  background: #EFF6FF;
+  border-color: #3B82F6;
+}
+
+body.minimal-ui .mcq-option.selected {
+  background: #3B82F6;
+  color: white;
+  border-color: #3B82F6;
+}
+
+body.minimal-ui #resultSummary {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  color: #111827;
+  background: #F3F4F6;
+  padding: 0.75rem 1.2rem;
+  border-radius: 6px;
+  max-width: 400px;
+  text-align: center;
+  border: 1px solid #E5E7EB;
+}
+
+body.minimal-ui #sentenceClue {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+body.minimal-ui #asciiOutput {
+  font-family: monospace;
+  background: #F9FAFB;
+  padding: 1rem;
+  border-radius: 6px;
+  white-space: pre-wrap;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* === DARK MODE === */
+
+body.minimal-ui.dark {
+  background-color: #1F2937;
+  color: #F9FAFB;
+}
+
+body.minimal-ui.dark header,
+body.minimal-ui.dark footer {
+  background-color: #111827;
+  border-bottom-color: #374151;
+}
+
+body.minimal-ui.dark .mode-buttons button,
+body.minimal-ui.dark #submitSentence {
+  background: #2563EB;
+  color: white;
+}
+
+body.minimal-ui.dark .mode-buttons button:hover,
+body.minimal-ui.dark #submitSentence:hover {
+  background: #1D4ED8;
+}
+
+body.minimal-ui.dark #sentenceClueContainer,
+body.minimal-ui.dark .builder-area {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+body.minimal-ui.dark .builder-area strong {
+  color: #60A5FA;
+}
+
+body.minimal-ui.dark .mcq-option {
+  background: #1E293B;
+  color: #F9FAFB;
+  border-color: #374151;
+}
+
+body.minimal-ui.dark .mcq-option:hover {
+  background: #334155;
+  border-color: #3B82F6;
+}
+
+body.minimal-ui.dark .mcq-option.selected {
+  background: #3B82F6;
+  color: white;
+  border-color: #3B82F6;
+}
+
+body.minimal-ui.dark #resultSummary {
+  background: #334155;
+  border-color: #475569;
+  color: #E5E7EB;
+}
+
+body.minimal-ui.dark #asciiOutput {
+  background: #111827;
+  color: #E5E7EB;
+}
