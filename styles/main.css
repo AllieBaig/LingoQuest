@@ -1,91 +1,155 @@
-
-
 /**
- * LingoQuest Main CSS
- * Defines core layout, typography, and responsive containers
- * Works with variables.css and game mode-specific CSS
+ * Main Stylesheet for LingoQuest PWA
+ * Provides base layout, typography, and responsive flex/grid system
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-27 19:15 | File: styles/main.css
+ * Timestamp: 2025-05-28 02:00 | File: styles/main.css
  */
+
+:root {
+  --bg: #f8f9fa;
+  --text: #222;
+  --accent: #4a90e2;
+  --radius: 8px;
+  --font: 'Segoe UI', sans-serif;
+}
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #ffffff;
-  color: #222;
-  line-height: 1.6;
-  padding: var(--spacing-md);
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
+
+body.dark {
+  --bg: #121212;
+  --text: #f0f0f0;
+  --accent: #6ec6ff;
+}
+
+h1, h2 {
+  text-align: center;
+  margin: 0.5em 0;
 }
 
 header {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
-  padding: var(--spacing-sm);
-  border-bottom: 1px solid var(--primary-border);
-  background-color: var(--primary-bg);
+  justify-content: space-between;
+  padding: 1rem;
+  background: var(--bg);
+  border-bottom: 1px solid #ccc;
 }
 
-#gameTitle {
-  font-size: 1.5rem;
-  font-weight: bold;
+.mode-buttons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin: 1rem auto;
+  width: 90%;
+  max-width: 320px;
 }
 
-#languageToggle,
-#uiModeSelector {
+button {
   font-size: 1rem;
-  margin-left: var(--spacing-sm);
-  padding: 0.3rem 0.5rem;
-  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s;
+  width: 100%;
 }
 
-main {
-  max-width: 600px;
-  margin: 0 auto;
-  padding-top: var(--spacing-md);
+button:hover {
+  background: #357ab8;
 }
 
-#questPanel {
-  margin-bottom: var(--spacing-md);
+select {
+  font-size: 1rem;
+  padding: 0.4rem;
+  border-radius: var(--radius);
 }
 
 .builder-area {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-sm);
-  margin: var(--spacing-md) 0;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 1rem auto;
+  width: 90%;
+  max-width: 360px;
 }
 
-button {
-  background-color: #4a90e2;
-  color: white;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: var(--button-radius);
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-button:hover {
-  background-color: #357acb;
-}
-
-#submitSentence {
-  margin-top: var(--spacing-md);
+#sentenceClue {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
 }
 
 #resultSummary {
-  margin-top: var(--spacing-sm);
+  text-align: center;
   font-weight: bold;
+  padding: 0.5rem;
 }
 
 footer {
-  margin-top: 2rem;
-  border-top: 1px solid var(--primary-border);
-  padding-top: var(--spacing-sm);
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  background: var(--bg);
+  border-top: 1px solid #ccc;
+}
+
+.toast {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  z-index: 10;
+  display: none;
+}
+
+.toast.visible {
+  display: block;
+}
+
+.mcq-wrapper {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
-  font-size: 0.9rem;
-  color: #666;
+  gap: 0.5rem;
+}
+
+.mcq-option {
+  padding: 0.6rem;
+  font-size: 1rem;
+  background: #eee;
+  border: 1px solid #ccc;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.mcq-option:hover {
+  background: #ddd;
+}
+
+.mcq-option.correct {
+  background: #4caf50;
+  color: white;
+}
+
+.mcq-option.incorrect {
+  background: #e53935;
+  color: white;
+}
+
+.hidden {
+  display: none;
 }
