@@ -1,78 +1,63 @@
-
 /**
- * ASCII Renderer Utility
- * Renders consistent ASCII blocks for all UI modes in fallback/terminal views
- * Imported by ASCII-compatible game modes or debug views
- * No external dependencies; updates content via #asciiOutput
+ * ASCII Renderer Utility (Touch-Friendly)
+ * Renders consistent, mobile-responsive ASCII blocks with optional touch actions
+ * Works with normal UI width constraints and <pre> container
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-27 20:05 | File: scripts/utils/asciiRenderer.js
+ * Timestamp: 2025-05-27 20:30 | File: scripts/utils/asciiRenderer.js
  */
 
 export function renderHeader(title = "LingoQuest") {
-  return [
-    "╔══════════════════════════════════════════════════════╗",
-    `║                  ${title.padEnd(45)}║`,
-    "║  [🌐] Language      [▼] UI: Normal / ASCII           ║",
-    "╚══════════════════════════════════════════════════════╝"
-  ].join('\n');
+  return box([
+    `                  ${title}                   `,
+    `[🌐] Language     [▼] UI: Normal / ASCII     `
+  ]);
 }
 
-export function renderClueBlock(modeLabel, clueLines) {
-  const lines = [
-    "╔══════════════════════════════════════════════════════╗",
-    `║ ${modeLabel.padEnd(52)}║`,
-    ...clueLines.map(line => `║ ${line.padEnd(52)}║`),
-    "╚══════════════════════════════════════════════════════╝"
-  ];
-  return lines.join('\n');
+export function renderClueBlock(modeLabel, lines) {
+  return box([
+    `${modeLabel}`,
+    ...lines
+  ]);
 }
 
 export function renderMCQOptions(options, selectedIndex = null) {
-  const parts = options.map((opt, i) => {
-    const prefix = selectedIndex === i ? '[✔]' : `[${i + 1}]`;
-    return `${prefix} ${opt}`;
-  });
-  return [
-    "╔══════════════════════════════════════════════════════╗",
-    `║ ${parts.join('   ').padEnd(52)}║`,
-    "╚══════════════════════════════════════════════════════╝"
-  ].join('\n');
+  const line = options
+    .map((opt, i) => {
+      const mark = (i === selectedIndex) ? '[✔]' : `[${i + 1}]`;
+      return `${mark} ${opt}`;
+    })
+    .join('   ');
+
+  return box([line]);
 }
 
-export function renderWordTiles(words, selectedIndices = []) {
-  const tiles = words.map((word, i) => {
-    const selected = selectedIndices.includes(i);
-    return selected ? `[ ${word}* ]` : `[ ${word} ]`;
-  });
+export function renderResult(msg) {
   return [
-    "╔══════════════════════════════════════════════════════╗",
-    `║ ${tiles.join(' ').padEnd(52)}║`,
-    "╚══════════════════════════════════════════════════════╝"
-  ].join('\n');
-}
-
-export function renderResult(message) {
-  return [
-    "════════════════════════════════════════════════════════",
-    `[✓] Result: ${message}`,
-    "════════════════════════════════════════════════════════"
+    '══════════════════════════════════════════════════════',
+    `[✓] Result: ${msg}`,
+    '══════════════════════════════════════════════════════'
   ].join('\n');
 }
 
 export function renderFooterHUD(xp, streak, version) {
-  return `XP: ${xp} pts     |     Streak: ${streak}     |     Version: ${version}`;
+  return `XP: ${xp} pts  |  Streak: ${streak}  |  Version: ${version}`;
 }
 
-/**
- * Renders all assembled blocks into #asciiOutput
- * @param  {...string} blocks - ASCII string blocks
- */
 export function printAscii(...blocks) {
-  const output = document.getElementById('asciiOutput');
-  if (output) {
-    output.hidden = false;
-    output.textContent = blocks.join('\n\n');
-  } else {
-    console.warn('[asciiRenderer] #asciiOutput not found.');
+  const out = document.getElementById('asciiOutput');
+  if (out) {
+    out.hidden = false;
+    out.textContent = blocks.join('\n\n');
   }
+}
+
+// Internal: simple ASCII box
+function box(lines) {
+  const width = 54;
+  const top = '╔' + '═'.repeat(width) + '╗';
+  const bottom = '╚' + '═'.repeat(width) + '╝';
+  const padded = lines.map(line => {
+    return '║ ' + line.padEnd(width - 2) + ' ║';
+  });
+  return [top, ...padded, bottom].join('\n');
 }
