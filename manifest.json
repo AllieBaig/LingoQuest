@@ -1,7 +1,7 @@
 {
   "name": "LingoQuest",
   "short_name": "LingoQuest",
-  "start_url": "/index.html",
+  "start_url": ""start_url": "/LingoQuest/index.html?source=homescreen",",
   "display": "standalone",
   "theme_color": "#4a90e2",
   "background_color": "#ffffff",
