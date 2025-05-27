@@ -1,27 +1,27 @@
-
 /**
- * Script Version Monitor
- * Displays and optionally switches between primary and fallback script versions
- * Imported by main.js or debugPanel.js for diagnostics
- * Related: tools/buildInfo.js, tools/debugPanel.js
- * UI-linked; supports local and backup version switching
+ * Script Version Monitor for LingoQuest
+ * Handles current version display, override, and version drift detection
+ * Imported by main.js and debug panels
+ * Related: tools/buildInfo.js, tools/versionRegistry.js
+ * UI-linked, fallback-aware, and localStorage compatible
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-27 18:00 | File: scripts/utils/version.js
+ * Timestamp: 2025-05-27 19:40 | File: scripts/utils/version.js
  */
 
-const VERSION_KEY = 'lingoquest_script_version';
+import { versionMap } from '../../tools/versionRegistry.js';
 
-export const scriptVersion = '1.0.0'; // Update this manually on script changes
+const VERSION_KEY = 'lingoquest_script_version';
+export const scriptVersion = '1.0.0';
 
 /**
- * Get the current script version (from constant or local override)
+ * Get the current active version (with override support)
  */
 export function getCurrentVersion() {
   return localStorage.getItem(VERSION_KEY) || scriptVersion;
 }
 
 /**
- * Set a custom override version (for debug/fallback)
+ * Override script version (for debug/testing)
  * @param {string} version
  */
 export function setVersionOverride(version) {
@@ -29,19 +29,40 @@ export function setVersionOverride(version) {
 }
 
 /**
- * Clear version override and revert to default
+ * Remove manual version override
  */
 export function clearVersionOverride() {
   localStorage.removeItem(VERSION_KEY);
 }
 
 /**
- * Display version in footer or debug UI
- * @param {string} elementId - ID of DOM element (e.g. #versionLabel)
+ * Show current version in footer or debug UI
+ * @param {string} elementId - e.g., "versionLabel"
  */
 export function showVersion(elementId) {
   const el = document.getElementById(elementId);
   if (el) {
     el.textContent = `Version: ${getCurrentVersion()}`;
   }
+}
+
+/**
+ * Compare registered versions against previous session
+ * Logs drift if any files have changed
+ */
+export function checkVersionChanges() {
+  const stored = JSON.parse(localStorage.getItem('lingoquest_script_versions') || '{}');
+  const changes = [];
+
+  for (const [path, version] of Object.entries(versionMap)) {
+    if (stored[path] && stored[path] !== version) {
+      changes.push({ path, old: stored[path], new: version });
+    }
+  }
+
+  if (changes.length) {
+    console.warn('[LingoQuest] Version drift detected:', changes);
+  }
+
+  localStorage.setItem('lingoquest_script_versions', JSON.stringify(versionMap));
 }
