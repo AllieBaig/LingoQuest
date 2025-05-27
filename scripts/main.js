@@ -1,13 +1,15 @@
 /**
  * Main Entry Script for LingoQuest
  * Handles mode + UI loading via buttons and URL params
- * Uses: utils/version.js, tools/buildInfo.js, ascii/lingoquest, lingoquest/
+ * Applies Minimal UI and persistent Dark Mode support
+ * Uses: utils/version.js, tools/buildInfo.js, utils/uiModeManager.js, ascii/lingoquest, lingoquest/
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-27 20:10 | File: scripts/main.js
+ * Timestamp: 2025-05-27 23:50 | File: scripts/main.js
  */
 
 import { showVersion, checkVersionChanges } from './utils/version.js';
 import { logBuildInfo } from '../tools/buildInfo.js';
+import { applyMinimalUI, toggleDarkMode } from './utils/uiModeManager.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   showVersion('versionLabel');
@@ -21,7 +23,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   console.log(`[LingoQuest] Mode: ${mode || 'none'} | UI: ${uiMode} | Lang: ${lang}`);
 
-  // Dropdown for UI mode
+  // Apply Minimal UI and Dark Mode based on localStorage
+  applyMinimalUI(uiMode);
+
+  // Dark Mode toggle button
+  document.getElementById('darkModeToggle')?.addEventListener('click', () => {
+    toggleDarkMode();
+  });
+
+  // UI Mode dropdown selector
   const uiSelector = document.getElementById('uiModeSelector');
   if (uiSelector) {
     uiSelector.value = uiMode;
@@ -33,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Mode buttons
+  // Mode launch buttons
   document.getElementById('startSolo')?.addEventListener('click', () => {
     launchMode('solo', uiMode, lang);
   });
@@ -42,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     launchMode('mixlingo', uiMode, lang);
   });
 
-  // If mode is in URL, auto-launch
+  // Auto-launch from URL
   if (mode) {
     launchMode(mode, uiMode, lang);
   }
