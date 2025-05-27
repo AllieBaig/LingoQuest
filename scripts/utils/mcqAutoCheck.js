@@ -1,54 +1,39 @@
-
 /**
- * Shared MCQ Auto-Check Utility for LingoQuest
- * Instantly evaluates selected answer and proceeds without Submit button
- * Used by: solo.js, mixlingo.js, wordSafari.js, etc.
- * Requires: nextQuestion() function in caller context
+ * MCQ Renderer with Auto Evaluation
+ * Displays multiple choice buttons and auto-checks selected answer
+ * Used by: mixlingo.js, solo.js, wordsafari.js
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-28 01:10 | File: scripts/utils/mcqAutoCheck.js
+ * Timestamp: 2025-05-28 03:55 | File: scripts/utils/mcqAutoCheck.js
  */
 
-export function renderMCQAutoCheck(targetId, correctAnswer, options = [], nextCallback = null) {
-  const container = document.getElementById(targetId);
+export function renderMCQAutoCheck(containerId, correctAnswer, options, onResult, vertical = false) {
+  const container = document.getElementById(containerId);
   if (!container) return;
 
   container.innerHTML = '';
+  const wrapper = document.createElement('div');
+  wrapper.className = `mcq-wrapper${vertical ? ' vertical' : ''}`;
 
-  const group = document.createElement('div');
-  group.className = 'mcq-wrapper';
-
-  options.forEach(option => {
+  options.forEach(opt => {
     const btn = document.createElement('button');
     btn.className = 'mcq-option';
-    btn.textContent = option;
+    btn.textContent = opt;
 
     btn.addEventListener('click', () => {
-      // Disable all buttons
-      group.querySelectorAll('.mcq-option').forEach(b => {
-        b.disabled = true;
-        b.classList.remove('selected');
+      const isCorrect = opt === correctAnswer;
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+      [...wrapper.children].forEach(b => {
+        if (b !== btn) b.disabled = true;
       });
 
-      const isCorrect = option === correctAnswer;
-      btn.classList.add('selected');
-      btn.classList.add(isCorrect ? 'correct' : 'incorrect');
-
-      const result = document.getElementById('resultSummary');
-      if (result) {
-        result.hidden = false;
-        result.textContent = isCorrect
-          ? `Correct! (${correctAnswer})`
-          : `Wrong — Answer: ${correctAnswer}`;
-      }
-
       setTimeout(() => {
-        if (result) result.hidden = true;
-        if (typeof nextCallback === 'function') nextCallback(isCorrect);
-      }, 1200);
+        onResult(isCorrect);
+      }, 600);
     });
 
-    group.appendChild(btn);
+    wrapper.appendChild(btn);
   });
 
-  container.appendChild(group);
+  container.appendChild(wrapper);
 }
