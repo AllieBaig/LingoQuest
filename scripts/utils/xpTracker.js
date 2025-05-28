@@ -1,50 +1,61 @@
 
 /**
- * XP and Level Tracker for LingoQuest
- * Manages XP bar, levels, and progress based on profile ID
- * Called from main.js and game modes to award XP
+ * XP Tracker — Manages XP gains and updates UI level/XP bar
+ * Depends on: #xpBar, #levelBadge, #xpLabel
+ * Reads and updates profile via profileManager.js
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-28 01:55 | File: scripts/utils/xpTracker.js
+ * Timestamp: 2025-05-28 16:00 | File: scripts/utils/xpTracker.js
  */
 
-let currentXP = 0;
-let currentLevel = 1;
-let currentProfileID = null;
+import { getProfile, saveProfile } from '../../tools/profileManager.js';
 
-const LEVELS = [0, 100, 250, 500, 800, 1200, 1700, 2300]; // Add more as needed
+let xpBarEl, levelBadgeEl, xpLabelEl;
+let profile;
 
-export function initXPBar(profileID) {
-  currentProfileID = profileID;
-  const key = `xp_${profileID}`;
-  currentXP = parseInt(localStorage.getItem(key) || '0', 10);
-  updateXPUI();
-}
-
-export function awardXP(amount = 10) {
-  if (!currentProfileID) return;
-  const key = `xp_${currentProfileID}`;
-  currentXP += amount;
-  localStorage.setItem(key, currentXP);
-  updateXPUI();
-}
-
-function updateXPUI() {
-  const xpFill = document.getElementById('xpFill');
-  const xpLabel = document.getElementById('xpLevelLabel');
-  if (!xpFill || !xpLabel) return;
-
-  currentLevel = getLevelForXP(currentXP);
-  const xpForNext = LEVELS[currentLevel] || (LEVELS[LEVELS.length - 1] + 500);
-  const xpForCurrent = LEVELS[currentLevel - 1] || 0;
-  const progress = ((currentXP - xpForCurrent) / (xpForNext - xpForCurrent)) * 100;
-
-  xpFill.style.width = `${Math.min(progress, 100)}%`;
-  xpLabel.textContent = `Level ${currentLevel}`;
-}
-
-function getLevelForXP(xp) {
-  for (let i = LEVELS.length - 1; i >= 0; i--) {
-    if (xp >= LEVELS[i]) return i + 1;
+export function updateXPDisplay(currentXP = 0) {
+  // Attempt to fetch DOM elements if not already cached
+  if (!xpBarEl || !levelBadgeEl || !xpLabelEl) {
+    xpBarEl = document.querySelector('#xpBar');
+    levelBadgeEl = document.querySelector('#levelBadge');
+    xpLabelEl = document.querySelector('#xpLabel');
   }
-  return 1;
+
+  // Safeguard: Exit if any elements are missing
+  if (!xpBarEl || !levelBadgeEl || !xpLabelEl) return;
+
+  profile = getProfile();
+  const xp = currentXP ?? profile.xp ?? 0;
+  const level = calculateLevel(xp);
+  const nextLevelXP = getNextLevelXP(level);
+
+  xpBarEl.value = xp % nextLevelXP;
+  xpBarEl.max = nextLevelXP;
+  levelBadgeEl.textContent = `Lv ${level}`;
+  xpLabelEl.textContent = `XP: ${xp}`;
+}
+
+/**
+ * Award XP and auto-update profile + UI
+ * @param {number} amount - How much XP to add
+ */
+export function awardXP(amount = 10) {
+  profile = getProfile();
+  profile.xp = (profile.xp || 0) + amount;
+  saveProfile(profile);
+  updateXPDisplay(profile.xp);
+}
+
+/**
+ * Calculate level based on XP
+ * Uses flat progression: every 100 XP = 1 level
+ */
+function calculateLevel(xp) {
+  return Math.floor(xp / 100) + 1;
+}
+
+/**
+ * Get how much XP is needed for the current level
+ */
+function getNextLevelXP(level) {
+  return 100; // static level size for now; can expand later
 }
