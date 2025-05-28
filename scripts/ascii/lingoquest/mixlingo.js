@@ -1,75 +1,38 @@
-// inside scripts/ascii/lingoquest/mixlingo.js
-import {
-  renderHeader, renderClueBlock, renderMCQOptions,
-  renderResult, renderFooterHUD, printAscii
-} from '../../utils/asciiRenderer.js';
+/**
+ * ASCII MixLingo — Multilingual MCQ with one word missing
+ * Uses shared asciiRenderer for text-mode rendering
+ * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
+ * Timestamp: 2025-05-28 19:45 | File: scripts/ascii/lingoquest/mixlingo.js
+ */
 
-export function initMixLingoAscii() {
-  const clue = "Complete the sentence with the correct foreign word:";
-  const sentence = `"I want to ___ an apple."`;
-  const options = ["manger", "dormir", "parler"];
-  const correct = "manger";
-  let selectedIndex = null;
+import { loadQuestionsForMode } from '../../utils/questionPool.js';
+import { renderClue, renderMCQ, renderSummary } from '../../utils/asciiRenderer.js';
+import { awardXP } from '../../utils/xpTracker.js';
 
-  const asciiOut = document.getElementById('asciiOutput');
-  asciiOut.hidden = false;
+export async function initAsciiMixLingo(lang = 'fr') {
+  const questions = await loadQuestionsForMode('mixlingo', lang);
+  let current = 0;
 
-  render();
-
-  // Touch-friendly selection
-  asciiOut.addEventListener('click', (e) => {
-    if (!e.target.dataset.index) return;
-    selectedIndex = parseInt(e.target.dataset.index);
-    render();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key >= '1' && e.key <= String(options.length)) {
-      selectedIndex = parseInt(e.key) - 1;
-      render();
-    } else if (e.key === 'Enter' && selectedIndex !== null) {
-      checkAnswer();
+  function next() {
+    if (current >= questions.length) {
+      renderSummary('[🏁] MixLingo complete!');
+      return;
     }
-  });
 
-  function checkAnswer() {
-    const selectedWord = options[selectedIndex];
-    const isCorrect = selectedWord === correct;
-    const msg = isCorrect
-      ? `Correct! "${correct}" means "to eat" in French.`
-      : `Incorrect. The correct word was "${correct}".`;
+    const q = questions[current];
+    const sentence = q.sentence.replace(q.blank, '____');
+    renderClue(sentence);
 
-    printAscii(
-      renderHeader(),
-      renderClueBlock("MixLingo (ASCII)", [clue, sentence]),
-      renderMCQOptions(options, selectedIndex),
-      renderResult(msg),
-      renderFooterHUD(40, "4 Days", "1.0.1")
-    );
+    renderMCQ(q.options, q.answer, (correct) => {
+      renderSummary(correct ? '[+] Correct! +10 XP' : '[-] Incorrect.');
+      if (correct) awardXP(10);
+      current++;
+      setTimeout(() => {
+        renderSummary('');
+        next();
+      }, 1600);
+    });
   }
 
-  function render() {
-    printAscii(
-      renderHeader(),
-      renderClueBlock("MixLingo (ASCII)", [clue, sentence]),
-      renderMCQOptions(options, selectedIndex),
-      renderFooterHUD(40, "4 Days", "1.0.1")
-    );
-
-    // Make [1] etc. tappable
-    makeTappable(options);
-  }
-
-  function makeTappable(opts) {
-    const lines = asciiOut.textContent.split('\n');
-    const mcqLineIndex = lines.findIndex(l => l.includes('[1]'));
-    if (mcqLineIndex === -1) return;
-
-    asciiOut.innerHTML = lines.map((line, i) => {
-      if (i !== mcqLineIndex) return line;
-      return opts.map((opt, idx) =>
-        `<span data-index="${idx}">[${idx + 1}] ${opt}</span>`
-      ).join('   ');
-    }).join('<br>');
-  }
+  next();
 }
