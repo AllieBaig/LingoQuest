@@ -50,3 +50,8 @@ export function displayNickname() {
   const nameEl = document.getElementById('nicknameDisplay');
   if (nameEl) nameEl.textContent = profile.nickname;
 }
+
+// ✅ New: Safe getter without creation
+export function getProfile() {
+  return JSON.parse(localStorage.getItem('userProfile')) || null;
+}
