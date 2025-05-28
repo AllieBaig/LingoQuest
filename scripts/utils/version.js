@@ -1,68 +1,29 @@
+
 /**
- * Script Version Monitor for LingoQuest
- * Handles current version display, override, and version drift detection
- * Imported by main.js and debug panels
- * Related: tools/buildInfo.js, tools/versionRegistry.js
- * UI-linked, fallback-aware, and localStorage compatible
+ * Version Info Display for LingoQuestPWA
+ * Shows current app version in #versionInfo footer element
+ * Optionally warns about outdated cache or build mismatch
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-27 19:40 | File: scripts/utils/version.js
+ * Timestamp: 2025-05-28 16:10 | File: scripts/utils/version.js
  */
 
-import { versionMap } from '../../tools/versionRegistry.js';
-
-const VERSION_KEY = 'lingoquest_script_version';
-export const scriptVersion = '1.0.0';
+const BUILD_VERSION = '2025.05.28.01'; // Update on every deploy
 
 /**
- * Get the current active version (with override support)
+ * Displays the version info in the UI footer.
+ * If mismatch detected in cache/localStorage, it can warn user.
  */
-export function getCurrentVersion() {
-  return localStorage.getItem(VERSION_KEY) || scriptVersion;
-}
+export function initVersionDisplay() {
+  const versionEl = document.querySelector('#versionInfo');
+  if (!versionEl) return;
 
-/**
- * Override script version (for debug/testing)
- * @param {string} version
- */
-export function setVersionOverride(version) {
-  localStorage.setItem(VERSION_KEY, version);
-}
-
-/**
- * Remove manual version override
- */
-export function clearVersionOverride() {
-  localStorage.removeItem(VERSION_KEY);
-}
-
-/**
- * Show current version in footer or debug UI
- * @param {string} elementId - e.g., "versionLabel"
- */
-export function showVersion(elementId) {
-  const el = document.getElementById(elementId);
-  if (el) {
-    el.textContent = `Version: ${getCurrentVersion()}`;
-  }
-}
-
-/**
- * Compare registered versions against previous session
- * Logs drift if any files have changed
- */
-export function checkVersionChanges() {
-  const stored = JSON.parse(localStorage.getItem('lingoquest_script_versions') || '{}');
-  const changes = [];
-
-  for (const [path, version] of Object.entries(versionMap)) {
-    if (stored[path] && stored[path] !== version) {
-      changes.push({ path, old: stored[path], new: version });
-    }
+  const cached = localStorage.getItem('lingoquest-version');
+  if (cached && cached !== BUILD_VERSION) {
+    versionEl.textContent = `⚠️ New version available! (${BUILD_VERSION})`;
+    versionEl.style.color = 'orange';
+  } else {
+    versionEl.textContent = `📦 v${BUILD_VERSION}`;
   }
 
-  if (changes.length) {
-    console.warn('[LingoQuest] Version drift detected:', changes);
-  }
-
-  localStorage.setItem('lingoquest_script_versions', JSON.stringify(versionMap));
+  localStorage.setItem('lingoquest-version', BUILD_VERSION);
 }
