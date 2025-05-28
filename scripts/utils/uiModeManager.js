@@ -1,57 +1,130 @@
-
 /**
- * UI Mode Manager — Handles ASCII/Normal toggle and Dark Mode
- * Loads preferred UI from URL or localStorage and updates body class.
- * Applies changes to dropdowns and dark mode button if present.
- * Depends on: #uiModeToggle, #darkModeToggle, body.minimal-ui
+ * UI Mode Manager
+ * Handles UI toggles: ASCII vs Normal, dark mode, button size, color themes
+ * Syncs dropdowns with localStorage and applies class changes to <body>
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-28 15:45 | File: scripts/utils/uiModeManager.js
+ * Timestamp: 2025-05-28 21:20 | File: scripts/utils/uiModeManager.js
  */
 
-export function applyUIMode(defaultUI = 'normal') {
-  const params = new URLSearchParams(location.search);
-  const storedUI = localStorage.getItem('uiMode');
-  const storedDark = localStorage.getItem('darkMode');
-
-  const urlUIMode = params.get('ui');
-  const urlDark = params.get('dark');
-
-  const uiMode = urlUIMode || storedUI || defaultUI;
-  const darkMode = urlDark === 'true' || storedDark === 'true';
-
+export function applyUIMode() {
   const body = document.body;
 
-  // UI Class
-  body.classList.add('minimal-ui');
-  if (darkMode) body.classList.add('dark');
-  else body.classList.remove('dark');
+  // === UI MODE (normal / ascii) ===
+  const uiToggle = document.getElementById('uiModeToggle');
+  if (uiToggle) {
+    const stored = localStorage.getItem('uiMode') || 'normal';
+    body.classList.add(`${stored}-ui`);
+    uiToggle.value = stored;
 
-  // Persist state
-  localStorage.setItem('uiMode', uiMode);
-  localStorage.setItem('darkMode', darkMode ? 'true' : 'false');
-
-  // Reflect dropdown toggle
-  const uiDropdown = document.querySelector('#uiModeToggle');
-  if (uiDropdown) {
-    uiDropdown.value = uiMode;
-    uiDropdown.addEventListener('change', () => {
-      localStorage.setItem('uiMode', uiDropdown.value);
-      reloadWithParam('ui', uiDropdown.value);
+    uiToggle.addEventListener('change', () => {
+      localStorage.setItem('uiMode', uiToggle.value);
+      location.reload(); // reload to re-initialize mode script
     });
   }
 
-  // Dark mode toggle
-  const darkToggle = document.querySelector('#darkModeToggle');
+  // === BUTTON SIZE (md / lg / xl / xxl) ===
+  const btnSizeToggle = document.getElementById('buttonSizeToggle');
+  if (btnSizeToggle) {
+    const stored = localStorage.getItem('buttonSize') || 'md';
+    body.classList.add(`btn-${stored}`);
+    btnSizeToggle.value = stored;
+
+    btnSizeToggle.addEventListener('change', () => {
+      body.classList.remove(`btn-${stored}`);
+      body.classList.add(`btn-${btnSizeToggle.value}`);
+      localStorage.setItem('buttonSize', btnSizeToggle.value);
+    });
+  }
+
+  // === DARK MODE LOCK ===
+  const darkToggle = document.getElementById('darkModeToggle');
   if (darkToggle) {
+    const saved = localStorage.getItem('darkMode') || 'auto';
+    if (saved === 'dark') body.classList.add('dark');
+    else if (saved === 'light') body.classList.remove('dark');
+    else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      body.classList.add('dark');
+    }
+
+    updateDarkToggleText();
+
     darkToggle.addEventListener('click', () => {
       const isDark = body.classList.toggle('dark');
-      localStorage.setItem('darkMode', isDark ? 'true' : 'false');
+      const mode = isDark ? 'dark' : 'light';
+      localStorage.setItem('darkMode', mode);
+      updateDarkToggleText();
     });
   }
-}
 
-function reloadWithParam(key, value) {
-  const url = new URL(location.href);
-  url.searchParams.set(key, value);
-  location.href = url.toString();
+  function updateDarkToggleText() {
+    const current = localStorage.getItem('darkMode');
+    if (darkToggle) {
+      darkToggle.textContent = current === 'dark' ? '🌙' : '☀️';
+      darkToggle.title = `Theme: ${current === 'dark' ? 'Dark' : 'Light'}`;
+    }
+  }
+
+  // === ASCII TEXT COLOR THEME ===
+  const asciiColorToggle = document.getElementById('asciiColorToggle');
+  if (asciiColorToggle) {
+    const stored = localStorage.getItem('asciiColor') || 'default';
+    body.classList.add(`ascii-color-${stored}`);
+    asciiColorToggle.value = stored;
+
+    asciiColorToggle.addEventListener('change', () => {
+      body.classList.remove(`ascii-color-${stored}`);
+      body.classList.add(`ascii-color-${asciiColorToggle.value}`);
+      localStorage.setItem('asciiColor', asciiColorToggle.value);
+    });
+  }
+
+  // === ASCII EMOJI MODE ===
+  const asciiEmojiToggle = document.getElementById('asciiEmojiModeToggle');
+  if (asciiEmojiToggle) {
+    const stored = localStorage.getItem('asciiEmojiMode') || 'emoji';
+    asciiEmojiToggle.value = stored;
+
+    asciiEmojiToggle.addEventListener('change', () => {
+      localStorage.setItem('asciiEmojiMode', asciiEmojiToggle.value);
+      location.reload(); // restart renderer to apply emoji stripping
+    });
+  }
+
+  // === QUIZ LANGUAGE MODE (specific / random) ===
+  const quizLangToggle = document.getElementById('quizLangModeToggle');
+  if (quizLangToggle) {
+    const stored = localStorage.getItem('quizLangMode') || 'specific';
+    quizLangToggle.value = stored;
+
+    quizLangToggle.addEventListener('change', () => {
+      localStorage.setItem('quizLangMode', quizLangToggle.value);
+      location.reload(); // to re-pick lang logic
+    });
+  }
+
+  // === LANGUAGE SELECTOR (en / fr / de) ===
+  const langToggle = document.getElementById('langChoiceToggle');
+  if (langToggle) {
+    const stored = localStorage.getItem('selectedLang') || 'fr';
+    langToggle.value = stored;
+
+    langToggle.addEventListener('change', () => {
+      localStorage.setItem('selectedLang', langToggle.value);
+      location.reload();
+    });
+
+    // Hide language select if quiz mode is random
+    if (localStorage.getItem('quizLangMode') === 'random') {
+      langToggle.style.display = 'none';
+    }
+  }
+
+  // === ☰ ASCII Settings Toggle ===
+  const asciiToggle = document.getElementById('asciiSettingsToggle');
+  const asciiPanel = document.getElementById('asciiSettingsPanel');
+  if (asciiToggle && asciiPanel) {
+    asciiToggle.addEventListener('click', () => {
+      asciiPanel.hidden = !asciiPanel.hidden;
+    });
+  }
 }
