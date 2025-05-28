@@ -1,72 +1,57 @@
 
 /**
- * UI Mode Manager for LingoQuest
- * Handles minimal UI, optional minimal-only mode, and dark mode persistence
+ * UI Mode Manager — Handles ASCII/Normal toggle and Dark Mode
+ * Loads preferred UI from URL or localStorage and updates body class.
+ * Applies changes to dropdowns and dark mode button if present.
+ * Depends on: #uiModeToggle, #darkModeToggle, body.minimal-ui
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-27 23:55 | File: scripts/utils/uiModeManager.js
+ * Timestamp: 2025-05-28 15:45 | File: scripts/utils/uiModeManager.js
  */
 
-const STYLE_IDS = {
-  main: 'main-css',
-  lingoquest: 'lingoquest-css',
-  minimal: 'minimal-ui-style'
-};
+export function applyUIMode(defaultUI = 'normal') {
+  const params = new URLSearchParams(location.search);
+  const storedUI = localStorage.getItem('uiMode');
+  const storedDark = localStorage.getItem('darkMode');
 
-export function applyMinimalUI(uiMode) {
-  const minimalOnly = localStorage.getItem('minimalOnly') === 'true';
+  const urlUIMode = params.get('ui');
+  const urlDark = params.get('dark');
 
-  if (uiMode === 'normal') {
-    if (minimalOnly) {
-      loadCSS('styles/minimal-ui.css', STYLE_IDS.minimal);
-      removeCSS(STYLE_IDS.main);
-      removeCSS(STYLE_IDS.lingoquest);
-    } else {
-      loadCSS('styles/main.css', STYLE_IDS.main);
-      loadCSS('styles/lingoquest.css', STYLE_IDS.lingoquest);
-      loadCSS('styles/minimal-ui.css', STYLE_IDS.minimal);
-    }
+  const uiMode = urlUIMode || storedUI || defaultUI;
+  const darkMode = urlDark === 'true' || storedDark === 'true';
 
-    document.body.classList.add('minimal-ui');
+  const body = document.body;
 
-    if (localStorage.getItem('darkMode') === 'true') {
-      document.body.classList.add('dark');
-    }
-  } else {
-    document.body.classList.remove('minimal-ui', 'dark');
-    removeCSS(STYLE_IDS.main);
-    removeCSS(STYLE_IDS.lingoquest);
-    removeCSS(STYLE_IDS.minimal);
+  // UI Class
+  body.classList.add('minimal-ui');
+  if (darkMode) body.classList.add('dark');
+  else body.classList.remove('dark');
+
+  // Persist state
+  localStorage.setItem('uiMode', uiMode);
+  localStorage.setItem('darkMode', darkMode ? 'true' : 'false');
+
+  // Reflect dropdown toggle
+  const uiDropdown = document.querySelector('#uiModeToggle');
+  if (uiDropdown) {
+    uiDropdown.value = uiMode;
+    uiDropdown.addEventListener('change', () => {
+      localStorage.setItem('uiMode', uiDropdown.value);
+      reloadWithParam('ui', uiDropdown.value);
+    });
+  }
+
+  // Dark mode toggle
+  const darkToggle = document.querySelector('#darkModeToggle');
+  if (darkToggle) {
+    darkToggle.addEventListener('click', () => {
+      const isDark = body.classList.toggle('dark');
+      localStorage.setItem('darkMode', isDark ? 'true' : 'false');
+    });
   }
 }
 
-export function toggleDarkMode(force = null) {
-  const isDark = document.body.classList.contains('dark');
-  const next = force !== null ? force : !isDark;
-
-  document.body.classList.toggle('dark', next);
-  localStorage.setItem('darkMode', next.toString());
-}
-
-export function toggleMinimalOnly(force = null) {
-  const current = localStorage.getItem('minimalOnly') === 'true';
-  const next = force !== null ? force : !current;
-
-  localStorage.setItem('minimalOnly', next.toString());
-  window.location.reload(); // reload to reapply CSS
-}
-
-// Helpers
-function loadCSS(href, id) {
-  if (!document.getElementById(id)) {
-    const link = document.createElement('link');
-    link.id = id;
-    link.rel = 'stylesheet';
-    link.href = href;
-    document.head.appendChild(link);
-  }
-}
-
-function removeCSS(id) {
-  const el = document.getElementById(id);
-  if (el) el.remove();
+function reloadWithParam(key, value) {
+  const url = new URL(location.href);
+  url.searchParams.set(key, value);
+  location.href = url.toString();
 }
