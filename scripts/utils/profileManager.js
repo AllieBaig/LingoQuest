@@ -1,71 +1,52 @@
-
-
 /**
- * Progressive Profile Creation + ID Management
- * Generates and stores profile ID based on device + nickname strategy
- * Used in: All game modes (XP, streaks, leaderboards)
+ * Profile Manager
+ * Creates and loads user profiles using UUID + nickname combo.
+ * Stores XP, streak, and settings in localStorage.
+ * Related: xpTracker.js, uiModeManager.js, trail.js, all game modes
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-28 01:30 | File: scripts/utils/profileManager.js
+ * Timestamp: 2025-05-28 22:05 | File: tools/profileManager.js
  */
 
-import { getDeviceFingerprint } from './fingerprint.js';
-import { generateWordPair } from './wordPair.js';
+export function loadUserProfile() {
+  let profile = JSON.parse(localStorage.getItem('userProfile'));
 
-const PROFILE_KEY = 'lingoquest_profile';
-
-export async function getOrCreateProfile() {
-  let profile = loadProfile();
-  if (profile) return profile;
-
-  const fingerprint = await getDeviceFingerprint();
-
-  // Method 1 — Auto Device ID
-  const autoID = `dev-${fingerprint}`;
-  profile = {
-    id: autoID,
-    nickname: `Guest-${fingerprint.slice(0, 5)}`,
-    created: Date.now(),
-  };
-
-  try {
-    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-    return profile;
-  } catch (e) {
-    // Method 2 — Manual Nickname (storage blocked)
-    const nickname = prompt('Pick a fun nickname (e.g. SunnyJane):');
-    const id = `nick-${nickname}-${fingerprint.slice(0, 4)}`;
-
-    if (await checkNicknameTaken(nickname)) {
-      alert('Nickname taken! Falling back...');
-      return fallbackToWordPair(fingerprint);
-    }
-
-    profile = { id, nickname, created: Date.now() };
-    return profile;
+  if (!profile || !profile.uuid || !profile.nickname) {
+    profile = createNewProfile();
+    saveUserProfile(profile);
   }
-}
 
-export function loadProfile() {
-  try {
-    return JSON.parse(localStorage.getItem(PROFILE_KEY));
-  } catch {
-    return null;
+  // Set XP & streak defaults if missing
+  if (localStorage.getItem('xpTotal') === null) {
+    localStorage.setItem('xpTotal', '0');
   }
-}
 
-export function saveProfile(profile) {
-  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-}
+  if (localStorage.getItem('streakDays') === null) {
+    localStorage.setItem('streakDays', '0');
+  }
 
-async function fallbackToWordPair(fingerprint) {
-  const wordPair = generateWordPair(); // e.g., "BlueTiger"
-  const id = `auto-${wordPair}-${fingerprint.slice(0, 4)}`;
-  const profile = { id, nickname: wordPair, created: Date.now() };
-  saveProfile(profile);
   return profile;
 }
 
-// Stub for nickname check — replace with server check if needed
-async function checkNicknameTaken(nick) {
-  return false; // always allow for now
+export function saveUserProfile(profile) {
+  localStorage.setItem('userProfile', JSON.stringify(profile));
+}
+
+export function createNewProfile() {
+  const uuid = crypto.randomUUID();
+  const nickname = generateNickname();
+  return { uuid, nickname };
+}
+
+function generateNickname() {
+  const words1 = ['Brave', 'Swift', 'Bright', 'Clever', 'Kind'];
+  const words2 = ['Falcon', 'Otter', 'Maple', 'Echo', 'Nimbus'];
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  return pick(words1) + pick(words2);
+}
+
+// Optional: show nickname in UI
+export function displayNickname() {
+  const profile = loadUserProfile();
+  const nameEl = document.getElementById('nicknameDisplay');
+  if (nameEl) nameEl.textContent = profile.nickname;
 }
