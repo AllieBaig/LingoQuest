@@ -1,54 +1,45 @@
-
 /**
- * ASCII MixLingo — Minimal UI fallback for multilingual word swap.
+ * ASCII MixLingo — Modular + Classic ASCII Feel
  * Replaces a blank in an English sentence with foreign MCQ options.
- * Uses: #sentenceClue, #sentenceBuilderArea, #resultSummary, #xpTracker
- * Depends on: questionPool.js, mcqAutoCheck.js, xpTracker.js
- * Related JSON: lang/mixlingo-*.json
+ * Uses: shared asciiRenderer with expressive ASCII status formatting
  * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
- * Timestamp: 2025-05-28 14:18 | File: scripts/ascii/lingoquest/mixlingo.js
+ * Timestamp: 2025-05-28 20:20 | File: scripts/ascii/lingoquest/mixlingo.js
  */
 
 import { loadQuestionsForMode } from '../../utils/questionPool.js';
-import { setupMCQ } from '../../utils/mcqAutoCheck.js';
+import { renderClue, renderMCQ, renderSummary } from '../../utils/asciiRenderer.js';
 import { awardXP } from '../../utils/xpTracker.js';
 
 export async function initAsciiMixLingo(lang = 'fr') {
-  const clueEl = document.querySelector('#sentenceClue');
-  const builderEl = document.querySelector('#sentenceBuilderArea');
-  const resultEl = document.querySelector('#resultSummary');
-
-  clueEl.textContent = '[🌍 ASCII MIXLINGO] Choose the correct word:';
-  builderEl.innerHTML = '';
-  resultEl.textContent = '';
-
   const questions = await loadQuestionsForMode('mixlingo', lang);
   let index = 0;
 
   function formatSentence(q) {
-    return q.sentence.replace('____', '____');
+    return q.sentence.replace(q.blank, '____');
   }
 
   function next() {
     if (index >= questions.length) {
-      resultEl.textContent = '[✔] You’ve completed all MixLingo challenges!';
+      renderSummary('[✔] You’ve completed all MixLingo challenges!');
       return;
     }
 
     const q = questions[index];
-    clueEl.textContent = `[ Sentence ${index + 1} ]  ${formatSentence(q)}`;
-    builderEl.innerHTML = '';
+    const lineTop = `╭────[ Sentence ${index + 1} ]`;
+    const lineBody = `│ ${formatSentence(q)}`;
+    const lineBottom = '╰─────────────────────────────';
+    renderClue(`${lineTop}\n${lineBody}\n${lineBottom}`);
 
-    setupMCQ(q.options, q.answer, builderEl, (correct) => {
+    renderMCQ(q.options, q.answer, (correct) => {
       if (correct) {
-        resultEl.textContent = '[+] Bravo! You earned 10 XP!';
+        renderSummary('[+] Bravo! You earned 10 XP!');
         awardXP(10);
       } else {
-        resultEl.textContent = '[-] Oops! Wrong word.';
+        renderSummary('[-] Oops! Wrong word.');
       }
       index++;
       setTimeout(() => {
-        resultEl.textContent = '';
+        renderSummary('');
         next();
       }, 1400);
     });
