@@ -1,5 +1,3 @@
-
-
 /**
  * Game Mode Menu Renderer
  * Renders the game mode selection menu for Normal UI and ASCII
@@ -17,18 +15,23 @@ const GAME_MODES = [
   { mode: 'wordsafari', label: '🦁 Word Safari' }
 ];
 
-export function renderGameMenu() {
+export function renderGameMenu(containerId = 'sentenceBuilderArea') {
   const body = document.body;
 
   if (body.classList.contains('ascii-ui')) {
     renderAsciiGameMenu();
   } else {
-    renderNormalGameMenu();
+    renderNormalGameMenu(containerId);
   }
 }
 
-function renderNormalGameMenu() {
-  const container = document.getElementById('sentenceBuilderArea');
+function renderNormalGameMenu(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) {
+    console.warn(`[menuRenderer] Container not found: ${containerId}`);
+    return;
+  }
+
   container.innerHTML = '';
 
   GAME_MODES.forEach(({ mode, label, lang }) => {
@@ -59,7 +62,6 @@ function renderAsciiGameMenu() {
   ];
   printAscii(...blocks);
 
-  // Add key listeners
   document.addEventListener('keydown', (e) => {
     const selected = parseInt(e.key);
     const selectedMode = GAME_MODES[selected - 1];
