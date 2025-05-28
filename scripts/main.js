@@ -19,12 +19,11 @@ const mode = rawMode || null;
 
 // Show menu if no mode is selected
 if (!mode) {
-  renderGameMenu();
+  renderGameMenu('gameMenu'); // ✅ specify the container ID
   applyUIMode();
   loadUserProfile();
   initVersionDisplay();
   updateXPDisplay();
-  
 }
 
 // Else: load mode
