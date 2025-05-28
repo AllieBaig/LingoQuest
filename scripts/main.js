@@ -17,6 +17,23 @@ const params = new URLSearchParams(location.search);
 const rawMode = params.get('mode');
 const mode = rawMode || null;
 
+
+// 🎮 Game switch dropdown handler
+document.addEventListener('DOMContentLoaded', () => {
+  const dropdown = document.getElementById('gameSwitchDropdown');
+  if (dropdown) {
+    dropdown.addEventListener('change', (e) => {
+      const selectedMode = e.target.value;
+      const selectedLang = localStorage.getItem('selectedLang') || 'fr';
+      const ui = localStorage.getItem('uiMode') || 'normal';
+      if (selectedMode) {
+        window.location.href = `?mode=${selectedMode}&lang=${selectedLang}&ui=${ui}`;
+      }
+    });
+  }
+});
+
+
 // Show menu if no mode is selected
 if (!mode) {
   renderGameMenu('gameMenu'); // ✅ specify the container ID
