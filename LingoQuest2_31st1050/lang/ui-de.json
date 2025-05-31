@@ -1,0 +1,19 @@
+
+
+
+
+{
+  "start_game": "Spiel starten",
+  "choose_mode": "Modus wählen",
+  "profile_label": "Profil",
+  "settings": "Einstellungen",
+  "back_to_menu": "Zurück zum Menü",
+  "language_label": "Sprache",
+  "theme_label": "Thema",
+  "font_label": "Spielschriftart",
+  "xp_label": "EP",
+  "nickname_label": "Spitzname",
+  "avatar_label": "Avatar",
+  "confirm": "Bestätigen",
+  "cancel": "Abbrechen"
+}
